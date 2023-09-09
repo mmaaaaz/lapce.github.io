@@ -1,85 +1,67 @@
-document.addEventListener('DOMContentLoaded', function () {
+// create an enum for github links
+const github = {
+  repo: "https://github.com/lapce/lapce",
+  windows: "Lapce-windows.msi",
+  linux: "Lapce-linux.tar.gz",
+  macos: "Lapce-macos.dmg",
+};
 
-    // rather than looking for it all the time, you could just create an enum and change this once than updating every line
-    const github = {
-        repo: 'https://github.com/lapce/lapce',
-        windows: 'Lapce-windows.msi',
-        linux: 'Lapce-linux.tar.gz',
-        macos: 'Lapce-macos.dmg'
-    }
+// toggle menu visibility
+const toggleMenu = () => {
+  const menu = document.querySelectorAll(".navbar-menu");
+  menu.forEach((item) => item.classList.toggle("hidden"));
+};
 
-    // there is no need to check for dom content loaded if you use defer inside html. Defer makes sure the script pauses until the dom loaded
+// add event listeners to burger and close buttons
+const addEventListeners = () => {
+  const burger = document.querySelectorAll(".navbar-burger");
+  const close = document.querySelectorAll(".navbar-close");
+  const backdrop = document.querySelectorAll(".navbar-backdrop");
 
-    // open
-    const burger = document.querySelectorAll('.navbar-burger');
-    const menu = document.querySelectorAll('.navbar-menu');
+  burger.forEach((item) => item.addEventListener("click", toggleMenu));
+  close.forEach((item) => item.addEventListener("click", toggleMenu));
+  backdrop.forEach((item) => item.addEventListener("click", toggleMenu));
+};
 
-    if (burger.length && menu.length) {
-        for (let i = 0; i < burger.length; i++) {
-            burger[i].addEventListener('click', () => {
-                for (let j = 0; j < menu.length; j++) {
-                    menu[j].classList.toggle('hidden');
-                }
-            });
-        }
-    }
+// set download link based on OS
+const setDownloadLink = () => {
+  const navApp = navigator.userAgent.toLowerCase();
+  let OSName = "mac";
 
-    // close
-    const close = document.querySelectorAll('.navbar-close');
-    const backdrop = document.querySelectorAll('.navbar-backdrop');
+  if (navApp.includes("win")) {
+    OSName = "win";
+  } else if (navApp.includes("linux") || navApp.includes("x11")) {
+    OSName = "linux";
+  }
 
-    if (close.length) {
-        for (let i = 0; i < close.length; i++) {
-            close[i].addEventListener('click', () => {
-                for (let j = 0; j < menu.length; j++) {
-                    menu[j].classList.toggle('hidden');
-                }
-            });
-        }
-    }
+  const download = document.querySelector("#download");
+  switch (OSName) {
+    case "win":
+      download.innerText = "Download for Windows";
+      download.setAttribute(
+        "href",
+        `${github.repo}/releases/latest/download/${github.windows}`
+      );
+      break;
+    case "mac":
+      download.innerText = "Download for macOS";
+      download.setAttribute(
+        "href",
+        `${github.repo}/releases/latest/download/${github.macos}`
+      );
+      break;
+    case "linux":
+      download.innerText = "Download for Linux";
+      download.setAttribute(
+        "href",
+        `${github.repo}/releases/latest/download/${github.linux}`
+      );
+      break;
+  }
+};
 
-    if (backdrop.length) {
-        for (let i = 0; i < backdrop.length; i++) {
-            backdrop[i].addEventListener('click', () => {
-                for (let j = 0; j < menu.length; j++) {
-                    menu[j].classList.toggle('hidden');
-                }
-            });
-        }
-    }
-
-    // to avoid variables being reached outside of scope, ES6 guides recommend the use of let and const for variables. "var" is only available for backwards compatibility
-    let OSName = "mac";
-    const navApp = navigator.userAgent.toLowerCase();
-
-    switch (true) {
-        case (navApp.indexOf("win") != -1):
-            OSName = "win";
-            break;
-        case (navApp.indexOf("mac") != -1):
-            OSName = "mac";
-            break;
-        case (navApp.indexOf("linux") != -1):
-            OSName = "linux";
-            break;
-        case (navApp.indexOf("x11") != -1):
-            OSName = "linux";
-            break;
-    }
-
-    const download = document.querySelector("#download");
-    switch (OSName) {
-        case "win":
-            download.innerText = "Download for Windows";
-            download.setAttribute("href", `${github.repo}/releases/latest/download/${github.windows}`)
-            break;
-        case "mac":
-            download.innerText = "Download for macOS";
-            download.setAttribute("href", `${github.repo}/releases/latest/download/${github.macos}`)
-            break;
-        case "linux":
-            download.innerText = "Download for Linux";
-            download.setAttribute("href", `${github.repo}/releases/latest/download/${github.linux}`)
-            break;
-    }
+// add event listener to DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  addEventListeners();
+  setDownloadLink();
 });
